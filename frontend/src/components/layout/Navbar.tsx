@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ShoppingBag, Menu, X, User, LayoutDashboard } from "lucide-react";
+import { ShoppingBag, Menu, X, User, LayoutDashboard, LogOut } from "lucide-react";
 import { motion, useScroll, useMotionValueEvent, AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
@@ -17,7 +17,6 @@ export default function Navbar() {
   // --- BACKEND CONNECTION STATE ---
   const [userInfo, setUserInfo] = useState<any>(null);
 
-  // 1. Check for Backend Session on Mount
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const data = localStorage.getItem("userInfo");
@@ -27,14 +26,12 @@ export default function Navbar() {
     }
   }, []);
 
-  // Monitors scroll to change background
   useMotionValueEvent(scrollY, "change", (latest) => {
     setScrolled(latest > 50);
   });
 
   const toggleMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen);
 
-  // 2. Dynamic Destination based on User Role
   const getProfileLink = () => {
     if (!userInfo) return "/login";
     if (userInfo.role === "admin" || userInfo.role === "super_admin") return "/admin/dashboard";
@@ -54,7 +51,7 @@ export default function Navbar() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-20">
             
-            {/* Mobile Menu Trigger */}
+            {/* LEFT: Mobile Menu Trigger */}
             <div className="flex items-center md:hidden z-[60]">
               <button 
                 onClick={toggleMenu}
@@ -64,19 +61,17 @@ export default function Navbar() {
               </button>
             </div>
 
-            {/* Logo */}
+            {/* CENTER: Logo */}
             <div className="flex-shrink-0 flex items-center">
               <Link href="/" className="font-serif text-2xl tracking-wider font-bold text-neutral-900 dark:text-white">
                 AYURLUXE
               </Link>
             </div>
 
-            {/* Desktop Navigation */}
-            <nav className="hidden md:flex space-x-8">
-              {/* Updated 'Collections' to point to Shop for now as we build collections */}
+            {/* CENTER-RIGHT: Desktop Navigation */}
+            <nav className="hidden md:flex space-x-8 mx-8">
               {[
                 { name: "Shop", href: "/shop" },
-                { name: "Collections", href: "/shop" }, 
                 { name: "About", href: "/about" },
                 { name: "Journal", href: "/journal" }
               ].map((item) => (
@@ -90,21 +85,24 @@ export default function Navbar() {
               ))}
             </nav>
 
-            {/* Action Icons */}
-            <div className="flex items-center space-x-2 md:space-x-4">
-              <ThemeToggle />
+            {/* RIGHT: Action Icons */}
+            <div className="flex items-center space-x-1 md:space-x-4">
               
-              {/* Dynamic User Icon */}
+              <div className="hidden sm:block">
+                 <ThemeToggle />
+              </div>
+              
+              {/* FIX: Removed 'hidden md:block' so this shows on mobile too */}
               <Link 
                 href={getProfileLink()} 
-                className="hidden md:block p-2 text-neutral-800 dark:text-white hover:opacity-70 relative"
+                className="p-2 text-neutral-800 dark:text-white hover:opacity-70 relative"
                 title={userInfo ? `Logged in as ${userInfo.name}` : "Login"}
               >
                  {userInfo?.role === 'admin' ? <LayoutDashboard className="h-5 w-5" /> : <User className="h-5 w-5" />}
                  
                  {/* Green Dot indicator if logged in */}
                  {userInfo && (
-                   <span className="absolute top-1 right-1 h-2 w-2 bg-green-500 rounded-full border border-white dark:border-black"></span>
+                   <span className="absolute top-1.5 right-1.5 h-2 w-2 bg-green-500 rounded-full border border-white dark:border-black"></span>
                  )}
               </Link>
               
@@ -132,9 +130,10 @@ export default function Navbar() {
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            className="fixed inset-0 z-[40] pt-20 bg-white dark:bg-luxury-dark md:hidden"
+            className="fixed inset-0 z-[40] pt-24 bg-white dark:bg-luxury-dark md:hidden flex flex-col"
           >
-            <div className="flex flex-col items-center justify-center h-full space-y-8 p-4">
+            {/* Menu Links */}
+            <div className="flex flex-col items-center space-y-8 p-4 flex-1">
               {[
                 { name: "Shop", href: "/shop" },
                 { name: "Collections", href: "/shop" },
@@ -150,15 +149,35 @@ export default function Navbar() {
                   {item.name}
                 </Link>
               ))}
+            </div>
 
-              {/* Mobile Login Link */}
-              <Link
-                  href={getProfileLink()}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="font-serif text-2xl text-neutral-900 dark:text-white hover:text-luxury-primary transition-colors flex items-center gap-2"
-                >
-                  {userInfo ? "My Account" : "Login"}
-                </Link>
+            {/* Mobile Footer Actions */}
+            <div className="p-8 border-t border-neutral-100 dark:border-white/10 bg-neutral-50 dark:bg-black/20">
+               <div className="flex flex-col gap-4">
+                  {/* Explicit Account Button for Mobile */}
+                  <Link 
+                    href={getProfileLink()}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="w-full py-4 rounded-xl bg-white dark:bg-white/5 border border-neutral-200 dark:border-white/10 flex items-center justify-center gap-3 font-bold text-luxury-dark dark:text-white shadow-sm"
+                  >
+                    {userInfo ? (
+                        <>
+                           {userInfo.role === 'admin' ? <LayoutDashboard size={18} /> : <User size={18} />}
+                           My Account
+                        </>
+                    ) : (
+                        <>
+                           <User size={18} />
+                           Login / Register
+                        </>
+                    )}
+                  </Link>
+                  
+                  {/* Mobile Theme Toggle */}
+                  <div className="flex justify-center">
+                     <ThemeToggle />
+                  </div>
+               </div>
             </div>
           </motion.div>
         )}
