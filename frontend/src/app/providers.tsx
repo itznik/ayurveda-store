@@ -38,18 +38,14 @@ export function Providers({ children }: { children: React.ReactNode }) {
   };
 
   // Prevent hydration errors
-  if (!mounted) return <>{children}</>;
-
+  if (!mounted) {
   return (
     <ThemeContext.Provider value={{ isDark, toggleTheme }}>
       <SocketProvider>
-        {/* CRITICAL: CartProvider must be inside SocketProvider */}
-        <CartProvider>
-          {children}
-        </CartProvider>
+        <CartProvider>{null}</CartProvider>
       </SocketProvider>
     </ThemeContext.Provider>
   );
-}
+  }
 
 export const useTheme = () => useContext(ThemeContext);
