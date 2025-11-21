@@ -1,6 +1,9 @@
 "use client";
 
 import React, { createContext, useContext, useEffect, useState } from "react";
+import { CartProvider } from "@/context/CartContext";
+import { SocketProvider } from "@/context/SocketContext"; // Import Socket
+import { ThemeProvider } from "next-themes";
 
 // Define the shape of our manual context
 type ThemeContextType = {
@@ -12,6 +15,7 @@ const ThemeContext = createContext<ThemeContextType>({
   isDark: false, 
   toggleTheme: () => {} 
 });
+
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [isDark, setIsDark] = useState(false);
@@ -53,7 +57,11 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <ThemeContext.Provider value={{ isDark, toggleTheme }}>
-      {children}
+      <SocketProvider> {/* Wrap Socket here */}
+        <CartProvider>   {/* Keep Cart here */}
+          {children}
+        </CartProvider>
+      </SocketProvider>
     </ThemeContext.Provider>
   );
 }
