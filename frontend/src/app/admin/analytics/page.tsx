@@ -2,11 +2,11 @@
 
 import { 
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, 
-  PieChart, Pie, Cell, LineChart, Line 
+  PieChart, Pie, Cell
 } from 'recharts';
 import { ArrowUpRight, ArrowDownRight, Smartphone, Monitor, Tablet } from "lucide-react";
 
-// --- MOCK DATA ---
+// --- MOCK DATA (To be replaced with real API data later) ---
 const TRAFFIC_DATA = [
   { name: 'Mon', visitors: 2400, orders: 400 },
   { name: 'Tue', visitors: 1398, orders: 300 },
@@ -44,7 +44,7 @@ export default function AdminAnalyticsPage() {
         />
         <AnalyticCard 
           title="Avg. Order Value" 
-          value="$82.40" 
+          value="₹2,400" // Updated to INR
           trend="+12%" 
           trendUp={true}
           desc="Average amount spent per transaction"
@@ -148,7 +148,7 @@ function AnalyticCard({ title, value, trend, trendUp, desc }: any) {
       <p className="text-sm font-bold text-neutral-500 uppercase tracking-widest mb-2">{title}</p>
       <div className="flex items-end gap-3 mb-2">
         <h2 className="text-4xl font-serif text-luxury-dark dark:text-white">{value}</h2>
-        <div className={`flex items-center px-2 py-1 rounded-lg text-xs font-bold mb-1 ${
+        <div className={`flex items-center px-2 py-1 rounded-lg text-xs font-bold ${
           trendUp ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' : 'bg-red-100 text-red-700'
         }`}>
           {trendUp ? <ArrowUpRight className="h-3 w-3 mr-1" /> : <ArrowDownRight className="h-3 w-3 mr-1" />}
