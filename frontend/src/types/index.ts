@@ -2,7 +2,8 @@ export interface User {
   _id: string;
   name: string;
   email: string;
-  role: "user" | "admin";
+  // Updated to match Backend Schema options
+  role: "user" | "admin" | "super_admin"; 
   token: string;
 }
 
