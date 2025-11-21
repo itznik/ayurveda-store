@@ -1,9 +1,12 @@
 "use client";
 
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { ArrowRight, Mail, Lock } from "lucide-react";
+import { ArrowRight, Mail, Lock, Loader2 } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
+import API from "@/lib/api";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -25,7 +28,7 @@ export default function LoginPage() {
       localStorage.setItem("userInfo", JSON.stringify(data));
       
       // 3. Redirect (If Admin -> Dashboard, If User -> Home)
-      if (data.role === 'admin') {
+      if (data.role === 'admin' || data.role === 'super_admin') {
           router.push("/admin/dashboard");
       } else {
           router.push("/");
@@ -33,30 +36,27 @@ export default function LoginPage() {
       
     } catch (err: any) {
       // 4. Handle Error
-      setError(err.response?.data?.message || "Something went wrong");
+      console.error("Login Error:", err);
+      setError(err.response?.data?.message || "Invalid email or password");
     } finally {
       setLoading(false);
     }
   };
+
   return (
     <>
       <Navbar /> 
       
-      {/* CONTAINER: 
-          Light Mode: Very pale Sage (#F4F7F5)
-          Dark Mode:  Deep Onyx (#050505) - No more muddy green background
-      */}
-      <div className="relative min-h-screen w-full flex items-center justify-center overflow-hidden bg-[#F4F7F5] dark:bg-[#050505] transition-colors duration-500">
+      {/* CONTAINER */}
+      <div className="relative min-h-screen w-full flex items-center justify-center overflow-hidden bg-[#F4F7F5] dark:bg-[#050505] transition-colors duration-500 pt-20">
         
-        {/* --- LIVE BACKGROUND (Subtle & Premium) --- */}
-        <div className="absolute inset-0 w-full h-full overflow-hidden">
-          {/* Top Left: Soft Sage (Light) / Deep Emerald (Dark) */}
+        {/* --- LIVE BACKGROUND --- */}
+        <div className="absolute inset-0 w-full h-full overflow-hidden pointer-events-none">
           <div className="absolute top-0 left-0 w-[500px] h-[500px] 
             bg-luxury-sage/30 dark:bg-emerald-900/20 
             rounded-full mix-blend-multiply dark:mix-blend-screen 
             filter blur-[100px] animate-blob opacity-70"></div>
           
-          {/* Bottom Right: Gold/Tea (Light) / Mint (Dark) */}
           <div className="absolute bottom-0 right-0 w-[500px] h-[500px] 
             bg-orange-100/40 dark:bg-teal-900/20 
             rounded-full mix-blend-multiply dark:mix-blend-screen 
@@ -70,10 +70,6 @@ export default function LoginPage() {
           transition={{ duration: 0.6, ease: "easeOut" }}
           className="relative z-10 w-full max-w-md mx-4"
         >
-          {/* GLASS CONTAINER
-             - rounded-3xl: MUCH softer corners
-             - dark:bg-neutral-900/80: Dark gray glass instead of green glass
-          */}
           <div className="bg-white/60 dark:bg-neutral-900/60 backdrop-blur-2xl border border-white/60 dark:border-white/5 shadow-2xl rounded-3xl p-8 md:p-10">
             
             {/* Header */}
@@ -86,8 +82,15 @@ export default function LoginPage() {
               </p>
             </div>
 
+            {/* Error Message */}
+            {error && (
+              <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border-l-4 border-red-500 text-red-600 dark:text-red-400 text-sm rounded-r">
+                {error}
+              </div>
+            )}
+
             {/* Login Form */}
-            <form onSubmit={handleLogin} value={email} onChange={e => setEmail(e.target.value)} {error && <p className="text-red-500">{error}</p>} className="space-y-5">
+            <form onSubmit={handleLogin} className="space-y-5">
               
               {/* Email Field */}
               <div className="space-y-2">
@@ -99,8 +102,10 @@ export default function LoginPage() {
                   <input 
                     type="email" 
                     placeholder="name@example.com"
-                    // ROUNDED-2XL for soft inputs
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                     className="w-full pl-14 pr-6 py-4 bg-white dark:bg-black/50 border border-neutral-200 dark:border-neutral-800 rounded-2xl focus:outline-none focus:ring-2 focus:ring-luxury-primary/20 dark:focus:ring-emerald-500/20 focus:border-luxury-primary dark:focus:border-emerald-500 text-neutral-900 dark:text-white placeholder-neutral-400 transition-all font-medium shadow-sm"
+                    required
                   />
                 </div>
               </div>
@@ -118,7 +123,10 @@ export default function LoginPage() {
                   <input 
                     type="password" 
                     placeholder="••••••••"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
                     className="w-full pl-14 pr-6 py-4 bg-white dark:bg-black/50 border border-neutral-200 dark:border-neutral-800 rounded-2xl focus:outline-none focus:ring-2 focus:ring-luxury-primary/20 dark:focus:ring-emerald-500/20 focus:border-luxury-primary dark:focus:border-emerald-500 text-neutral-900 dark:text-white placeholder-neutral-400 transition-all font-medium shadow-sm"
+                    required
                   />
                 </div>
               </div>
@@ -127,11 +135,18 @@ export default function LoginPage() {
               <motion.button
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                // ROUNDED-2XL for soft button
-                className="w-full flex items-center justify-center space-x-2 bg-luxury-primary dark:bg-white text-white dark:text-black py-4 rounded-2xl font-bold tracking-widest shadow-lg hover:shadow-xl hover:bg-luxury-dark dark:hover:bg-neutral-200 transition-all mt-6"
+                disabled={loading}
+                type="submit"
+                className="w-full flex items-center justify-center space-x-2 bg-luxury-primary dark:bg-white text-white dark:text-black py-4 rounded-2xl font-bold tracking-widest shadow-lg hover:shadow-xl hover:bg-luxury-dark dark:hover:bg-neutral-200 transition-all mt-6 disabled:opacity-70 disabled:cursor-not-allowed"
               >
-                <span>SIGN IN</span>
-                <ArrowRight className="h-4 w-4" />
+                {loading ? (
+                  <Loader2 className="animate-spin h-5 w-5" />
+                ) : (
+                  <>
+                    <span>SIGN IN</span>
+                    <ArrowRight className="h-4 w-4" />
+                  </>
+                )}
               </motion.button>
             </form>
 
