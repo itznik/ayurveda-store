@@ -1,17 +1,17 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { LayoutDashboard, ShoppingBag, Users, Package, Settings, BarChart3, LogOut, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 const MENU_ITEMS = [
-  { name: "Dashboard", icon: <LayoutDashboard />, href: "/admin" },
+  { name: "Dashboard", icon: <LayoutDashboard />, href: "/admin/dashboard" }, // Updated to point to dashboard page
   { name: "Orders", icon: <ShoppingBag />, href: "/admin/orders" },
   { name: "Products", icon: <Package />, href: "/admin/products" },
   { name: "Customers", icon: <Users />, href: "/admin/customers" },
-  { name: "Analytics", icon: <BarChart3 />, href: "/admin/analytics" },
-  { name: "Settings", icon: <Settings />, href: "/admin/settings" },
+  // { name: "Analytics", icon: <BarChart3 />, href: "/admin/analytics" }, // Uncomment when analytics page is ready
+  // { name: "Settings", icon: <Settings />, href: "/admin/settings" }, // Uncomment when settings page is ready
 ];
 
 interface AdminSidebarProps {
@@ -21,6 +21,14 @@ interface AdminSidebarProps {
 
 export function AdminSidebar({ isOpen, setIsOpen }: AdminSidebarProps) {
   const pathname = usePathname();
+  const router = useRouter();
+
+  const handleLogout = () => {
+    // Clear Admin Session
+    localStorage.removeItem("userInfo");
+    // Redirect to Login
+    router.push("/login");
+  };
 
   // Sidebar Content Component
   const SidebarContent = () => (
@@ -66,7 +74,10 @@ export function AdminSidebar({ isOpen, setIsOpen }: AdminSidebarProps) {
 
       {/* Footer */}
       <div className="p-4 border-t border-neutral-200 dark:border-white/5">
-        <button className="flex items-center gap-3 w-full px-4 py-3 rounded-xl text-red-500 hover:bg-red-50 dark:hover:bg-red-900/10 transition-colors">
+        <button 
+          onClick={handleLogout}
+          className="flex items-center gap-3 w-full px-4 py-3 rounded-xl text-red-500 hover:bg-red-50 dark:hover:bg-red-900/10 transition-colors"
+        >
           <LogOut className="h-5 w-5" />
           <span className="font-bold text-sm">Logout</span>
         </button>
@@ -77,7 +88,7 @@ export function AdminSidebar({ isOpen, setIsOpen }: AdminSidebarProps) {
   return (
     <>
       {/* DESKTOP SIDEBAR (Always Visible) */}
-      <aside className="hidden md:flex w-64 flex-col fixed inset-y-0 z-50">
+      <aside className="hidden md:flex w-64 flex-col fixed inset-y-0 z-50 h-screen">
         <SidebarContent />
       </aside>
 
@@ -100,7 +111,7 @@ export function AdminSidebar({ isOpen, setIsOpen }: AdminSidebarProps) {
               animate={{ x: 0 }} 
               exit={{ x: "-100%" }}
               transition={{ type: "spring", damping: 25, stiffness: 200 }}
-              className="fixed inset-y-0 left-0 w-64 z-[70] md:hidden"
+              className="fixed inset-y-0 left-0 w-64 z-[70] md:hidden h-full"
             >
               <SidebarContent />
             </motion.div>
