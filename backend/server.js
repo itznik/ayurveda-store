@@ -4,6 +4,7 @@ const http = require('http');
 const { Server } = require('socket.io'); // The Real-Time Engine
 const mongoose = require('mongoose');
 const cors = require('cors');
+const userRoutes = require('./routes/userRoutes');
 
 // Security Packages (Req #4)
 const helmet = require('helmet');
@@ -56,6 +57,7 @@ io.on('connection', (socket) => {
 });
 
 // --- 4. ROUTES ---
+app.use('/api/users', userRoutes);
 app.get('/', (req, res) => res.send('Ayurveda Backend Secure & Live'));
 
 // --- 5. START SERVER ---
