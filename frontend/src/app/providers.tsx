@@ -4,7 +4,7 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 import { CartProvider } from "@/context/CartContext";
 import { SocketProvider } from "@/context/SocketContext";
 
-// 1. Theme Context
+// 1. Theme Context Logic
 type ThemeContextType = {
   isDark: boolean;
   toggleTheme: () => void;
@@ -15,7 +15,7 @@ const ThemeContext = createContext<ThemeContextType>({
   toggleTheme: () => {} 
 });
 
-// 2. Master Provider Component
+// 2. Master Wrapper
 export function Providers({ children }: { children: React.ReactNode }) {
   const [isDark, setIsDark] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -37,12 +37,13 @@ export function Providers({ children }: { children: React.ReactNode }) {
     localStorage.setItem("theme", newMode ? "dark" : "light");
   };
 
+  // Prevent hydration errors
   if (!mounted) return <>{children}</>;
 
   return (
     <ThemeContext.Provider value={{ isDark, toggleTheme }}>
       <SocketProvider>
-        {/* CRITICAL: CartProvider must wrap children here */}
+        {/* CRITICAL: CartProvider must be inside SocketProvider */}
         <CartProvider>
           {children}
         </CartProvider>
