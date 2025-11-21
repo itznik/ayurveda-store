@@ -2,8 +2,7 @@
 
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { CartProvider } from "@/context/CartContext";
-import { SocketProvider } from "@/context/SocketContext"; // Import Socket
-import { ThemeProvider } from "next-themes";
+import { SocketProvider } from "@/context/SocketContext";
 
 // Define the shape of our manual context
 type ThemeContextType = {
@@ -16,8 +15,8 @@ const ThemeContext = createContext<ThemeContextType>({
   toggleTheme: () => {} 
 });
 
-
-export function ThemeProvider({ children }: { children: React.ReactNode }) {
+// RENAMED to 'Providers' because it wraps everything (Cart, Socket, Theme)
+export function Providers({ children }: { children: React.ReactNode }) {
   const [isDark, setIsDark] = useState(false);
   const [mounted, setMounted] = useState(false);
 
@@ -57,8 +56,8 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <ThemeContext.Provider value={{ isDark, toggleTheme }}>
-      <SocketProvider> {/* Wrap Socket here */}
-        <CartProvider>   {/* Keep Cart here */}
+      <SocketProvider> {/* Real-Time Connection */}
+        <CartProvider>   {/* Cart Logic */}
           {children}
         </CartProvider>
       </SocketProvider>
