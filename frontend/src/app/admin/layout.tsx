@@ -1,8 +1,9 @@
-"use client"; // Needs client for state
+"use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { AdminSidebar } from "@/app/admin/AdminSidebar";
-import { Menu } from "lucide-react";
+import { Menu, Loader2 } from "lucide-react";
 
 export default function AdminLayout({
   children,
@@ -10,6 +11,42 @@ export default function AdminLayout({
   children: React.ReactNode;
 }>) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isAuthorized, setIsAuthorized] = useState(false);
+  const router = useRouter();
+
+  // 🔒 SECURITY GUARD: Protect Admin Routes
+  useEffect(() => {
+    const storedUser = localStorage.getItem("userInfo");
+    
+    if (!storedUser) {
+      router.push("/admin/login");
+      return;
+    }
+
+    try {
+      const user = JSON.parse(storedUser);
+      // Strict Role Check
+      if (user.role !== "admin" && user.role !== "super_admin") {
+        // Redirect unauthorized users to home
+        router.push("/"); 
+      } else {
+        // Allow Access
+        setIsAuthorized(true);
+      }
+    } catch (error) {
+      localStorage.removeItem("userInfo");
+      router.push("/admin/login");
+    }
+  }, [router]);
+
+  // Show Loading Screen while checking permissions
+  if (!isAuthorized) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#F4F7F5] dark:bg-[#050505]">
+        <Loader2 className="h-10 w-10 animate-spin text-luxury-primary" />
+      </div>
+    );
+  }
 
   return (
     <div className="flex min-h-screen bg-[#F4F7F5] dark:bg-[#050505] transition-colors duration-500">
