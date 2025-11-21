@@ -6,6 +6,7 @@ import { ArrowRight } from "lucide-react";
 
 export function Hero() {
   const { scrollY } = useScroll();
+  // Parallax effect: Moves background slower than foreground
   const y = useTransform(scrollY, [0, 500], [0, 200]);
 
   return (
@@ -15,9 +16,10 @@ export function Hero() {
       <motion.div style={{ y }} className="absolute inset-0 z-0">
         <div 
           className="absolute inset-0 bg-cover bg-center"
+          // High-quality Ayurvedic imagery
           style={{ backgroundImage: "url('https://images.unsplash.com/photo-1615485290382-441e4d049cb5?q=80&w=2080&auto=format&fit=crop')" }}
         />
-        {/* Darker Green Overlay for better text readability */}
+        {/* Overlay for text contrast */}
         <div className="absolute inset-0 bg-luxury-dark/40 dark:bg-luxury-dark/60 backdrop-blur-[2px]" />
       </motion.div>
 
@@ -34,17 +36,17 @@ export function Hero() {
           
           <h1 className="font-serif text-5xl md:text-7xl lg:text-8xl text-white mb-8 leading-tight drop-shadow-2xl">
             Rediscover <br /> 
-            {/* CHANGED: Gold -> Sage Green */}
             <span className="italic text-luxury-sage">Nature's</span> Essence
           </h1>
           
           <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
             
-            {/* CHANGED: Button variant 'gold' -> 'primary' (Hunter Green) */}
+            {/* Links to the Dynamic Shop Page we connected earlier */}
             <LuxuryButton href="/shop" variant="primary" className="min-w-[220px] shadow-xl shadow-luxury-dark/50">
               Shop Collection <ArrowRight className="h-4 w-4" />
             </LuxuryButton>
 
+            {/* Ensure 'src/app/about/page.tsx' exists, or this will 404 */}
             <LuxuryButton href="/about" variant="outline" className="min-w-[220px] border-white text-white hover:text-luxury-dark dark:hover:text-luxury-dark hover:bg-white">
               Our Story
             </LuxuryButton>
