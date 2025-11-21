@@ -3,19 +3,19 @@
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { Plus } from "lucide-react";
-import { useCart } from "@/context/CartContext"; // Import the hook
+import { useCart } from "@/context/CartContext"; 
 
+// Update interface to match Backend Data
 interface Product {
-  id: string | number;
+  _id: string; // Changed from id -> _id
   name: string;
   category: string;
-  price: string;
+  price: number; // Changed from string -> number
   image: string;
-  isNew?: boolean;
+  isNew?: boolean; // Optional property
 }
 
-export function ProductCard({ product }: { product: Product }) {
-  // 1. Get the addToCart function from our Context
+export default function ProductCard({ product }: { product: Product }) {
   const { addToCart } = useCart();
 
   return (
@@ -26,7 +26,8 @@ export function ProductCard({ product }: { product: Product }) {
       className="group relative"
     >
       {/* IMAGE CONTAINER - Links to Product Detail */}
-      <Link href={`/products/${product.id}`}>
+      {/* FIX: Use _id for the URL */}
+      <Link href={`/products/${product._id}`}>
         <div className="relative aspect-[3/4] overflow-hidden rounded-2xl bg-neutral-100 dark:bg-neutral-900 mb-5 cursor-pointer">
           
           {/* Badge */}
@@ -54,17 +55,19 @@ export function ProductCard({ product }: { product: Product }) {
           <p className="text-xs font-bold uppercase tracking-widest text-neutral-500 dark:text-neutral-500 mb-1">
             {product.category}
           </p>
-          <Link href={`/products/${product.id}`}>
-            <h3 className="font-serif text-xl text-neutral-900 dark:text-white group-hover:text-luxury-primary dark:group-hover:text-emerald-400 transition-colors">
+          {/* FIX: Use _id for the URL */}
+          <Link href={`/products/${product._id}`}>
+            <h3 className="font-serif text-xl text-neutral-900 dark:text-white group-hover:text-luxury-primary dark:group-hover:text-emerald-400 transition-colors line-clamp-1">
               {product.name}
             </h3>
           </Link>
+          {/* FIX: Format Number Price with ₹ */}
           <p className="text-sm font-medium text-neutral-900 dark:text-white mt-1">
-            {product.price}
+            ₹{product.price.toFixed(2)}
           </p>
         </div>
 
-        {/* Floating Add Button (Logic Connected Here) */}
+        {/* Floating Add Button */}
         <button 
           onClick={() => addToCart(product)}
           className="p-3 rounded-full border border-neutral-200 dark:border-neutral-800 hover:bg-luxury-primary hover:border-luxury-primary hover:text-white dark:hover:bg-white dark:hover:text-black transition-all duration-300 group-hover:scale-110"
