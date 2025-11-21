@@ -4,17 +4,16 @@ import { motion, AnimatePresence } from "framer-motion";
 import { X, Plus, Minus, Trash2, ArrowRight } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 import { LuxuryButton } from "@/components/ui/LuxuryButton";
-import { useRouter } from "next/navigation"; // Import Router for manual navigation
+import { useRouter } from "next/navigation";
 
 export function CartDrawer() {
   const { items, isOpen, closeCart, updateQuantity, removeFromCart, cartTotal } = useCart();
   const router = useRouter();
 
-  // FIX: Manual handler to ensure smooth transition
   const handleCheckout = () => {
-    closeCart(); // 1. Close drawer FIRST
+    closeCart(); 
     setTimeout(() => {
-      router.push("/checkout"); // 2. Navigate slightly after to allow animation to start closing
+      router.push("/checkout");
     }, 300); 
   };
 
@@ -59,7 +58,8 @@ export function CartDrawer() {
                 </div>
               ) : (
                 items.map((item) => (
-                  <motion.div layout key={item.id} className="flex gap-4 bg-white dark:bg-white/5 p-3 rounded-2xl border border-neutral-100 dark:border-white/5">
+                  // FIX: Use item._id for Key
+                  <motion.div layout key={item._id} className="flex gap-4 bg-white dark:bg-white/5 p-3 rounded-2xl border border-neutral-100 dark:border-white/5">
                     {/* Image */}
                     <div className="relative w-20 h-24 flex-shrink-0 bg-neutral-100 rounded-xl overflow-hidden">
                       <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
@@ -70,7 +70,8 @@ export function CartDrawer() {
                       <div>
                         <div className="flex justify-between items-start">
                           <h4 className="font-serif text-neutral-900 dark:text-white line-clamp-1">{item.name}</h4>
-                          <button onClick={() => removeFromCart(item.id)} className="text-neutral-400 hover:text-red-500 transition-colors">
+                          {/* FIX: Use item._id for Remove */}
+                          <button onClick={() => removeFromCart(item._id)} className="text-neutral-400 hover:text-red-500 transition-colors">
                             <Trash2 className="h-4 w-4" />
                           </button>
                         </div>
@@ -79,15 +80,17 @@ export function CartDrawer() {
 
                       <div className="flex items-center justify-between mt-2">
                         <div className="flex items-center gap-3 bg-neutral-100 dark:bg-black/30 rounded-lg px-2 py-1">
-                          <button onClick={() => updateQuantity(item.id, -1)} className="p-1 hover:text-luxury-primary dark:text-white">
+                          {/* FIX: Use item._id for Update */}
+                          <button onClick={() => updateQuantity(item._id, -1)} className="p-1 hover:text-luxury-primary dark:text-white">
                             <Minus className="h-3 w-3" />
                           </button>
                           <span className="text-xs font-bold w-4 text-center dark:text-white">{item.quantity}</span>
-                          <button onClick={() => updateQuantity(item.id, 1)} className="p-1 hover:text-luxury-primary dark:text-white">
+                          <button onClick={() => updateQuantity(item._id, 1)} className="p-1 hover:text-luxury-primary dark:text-white">
                             <Plus className="h-3 w-3" />
                           </button>
                         </div>
-                        <p className="font-bold text-neutral-900 dark:text-white">${(item.price * item.quantity).toFixed(2)}</p>
+                        {/* FIX: Updated to ₹ Symbol */}
+                        <p className="font-bold text-neutral-900 dark:text-white">₹{(item.price * item.quantity).toFixed(2)}</p>
                       </div>
                     </div>
                   </motion.div>
@@ -100,11 +103,10 @@ export function CartDrawer() {
               <div className="p-6 bg-white dark:bg-black/20 border-t border-neutral-200 dark:border-white/10 space-y-4">
                 <div className="flex justify-between items-center">
                   <span className="text-sm text-neutral-500 dark:text-neutral-400">Subtotal</span>
-                  <span className="font-serif text-xl font-bold text-luxury-dark dark:text-white">${cartTotal.toFixed(2)}</span>
+                  <span className="font-serif text-xl font-bold text-luxury-dark dark:text-white">₹{cartTotal.toFixed(2)}</span>
                 </div>
                 <p className="text-xs text-neutral-400 text-center">Shipping & taxes calculated at checkout</p>
                 
-                {/* FIX: Using div wrapper + onClick handler instead of href directly */}
                 <div onClick={handleCheckout}>
                   <LuxuryButton 
                     className="w-full shadow-lg shadow-luxury-primary/20"
