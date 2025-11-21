@@ -1,29 +1,44 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Navbar from "@/components/layout/Navbar";
-import { ProductCard } from "@/components/shop/ProductCard";
+import ProductCard from "@/components/shop/ProductCard"; // Default import
 import { Footer } from "@/components/layout/Footer";
 import { motion } from "framer-motion";
-
-// MOCK DATA (We'll connect DB later)
-const PRODUCTS = [
-  { id: 1, name: "Kumkumadi Tailam", price: "$45.00", category: "Face Oils", isNew: true, image: "https://images.unsplash.com/photo-1608248597279-f99d160bfbc8?q=80&w=800&auto=format&fit=crop" },
-  { id: 2, name: "Saffron Elixir", price: "$62.00", category: "Serums", image: "https://images.unsplash.com/photo-1620916566398-39f1143ab7be?q=80&w=800&auto=format&fit=crop" },
-  { id: 3, name: "Rose Water Mist", price: "$28.00", category: "Toners", image: "https://images.unsplash.com/photo-1601049541289-9b1b7bbbfe19?q=80&w=800&auto=format&fit=crop" },
-  { id: 4, name: "Bhringraj Hair Oil", price: "$35.00", category: "Hair Care", image: "https://images.unsplash.com/photo-1598440947619-2c35fc9aa908?q=80&w=800&auto=format&fit=crop" },
-  { id: 5, name: "Sandalwood Mask", price: "$40.00", category: "Face Masks", isNew: true, image: "https://images.unsplash.com/photo-1596755094514-f87e34085b2c?q=80&w=800&auto=format&fit=crop" },
-  { id: 6, name: "Jasmine Body Oil", price: "$55.00", category: "Body Care", image: "https://images.unsplash.com/photo-1611080626919-7cf5a9dbab5b?q=80&w=800&auto=format&fit=crop" },
-];
-
-const CATEGORIES = ["View All", "Face Oils", "Serums", "Hair Care", "Body Care", "Wellness"];
+import API from "@/lib/api";
+import { Product } from "@/types";
+import { Loader2 } from "lucide-react";
 
 export default function ShopPage() {
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
   const [activeCategory, setActiveCategory] = useState("View All");
 
+  // 1. Fetch Real Data from Backend
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const { data } = await API.get("/products");
+        setProducts(data);
+      } catch (error) {
+        console.error("Failed to fetch shop products", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProducts();
+  }, []);
+
+  // 2. Generate Dynamic Categories from Data
+  const categories = useMemo(() => {
+    const uniqueCats = Array.from(new Set(products.map((p) => p.category)));
+    return ["View All", ...uniqueCats];
+  }, [products]);
+
+  // 3. Filter Logic
   const filteredProducts = activeCategory === "View All" 
-    ? PRODUCTS 
-    : PRODUCTS.filter(p => p.category === activeCategory);
+    ? products 
+    : products.filter(p => p.category === activeCategory);
 
   return (
     <main className="min-h-screen bg-[#F4F7F5] dark:bg-[#050505] transition-colors duration-500">
@@ -58,7 +73,7 @@ export default function ShopPage() {
               </h3>
               
               <div className="flex md:flex-col gap-2 overflow-x-auto md:overflow-visible pb-4 md:pb-0 no-scrollbar">
-                {CATEGORIES.map((cat) => (
+                {categories.map((cat) => (
                   <button
                     key={cat}
                     onClick={() => setActiveCategory(cat)}
@@ -77,16 +92,24 @@ export default function ShopPage() {
 
           {/* PRODUCT GRID */}
           <div className="flex-1">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-12">
-              {filteredProducts.map((product) => (
-                <ProductCard key={product.id} product={product} />
-              ))}
-            </div>
+            {loading ? (
+               <div className="flex justify-center py-20">
+                  <Loader2 className="animate-spin w-10 h-10 text-luxury-primary" />
+               </div>
+            ) : (
+              <>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-12">
+                  {filteredProducts.map((product) => (
+                    <ProductCard key={product._id} product={product} />
+                  ))}
+                </div>
 
-            {filteredProducts.length === 0 && (
-              <div className="py-20 text-center text-neutral-500">
-                No products found in this category.
-              </div>
+                {filteredProducts.length === 0 && (
+                  <div className="py-20 text-center text-neutral-500 border border-dashed border-neutral-300 dark:border-neutral-800 rounded-xl">
+                    <p>No products found in this category.</p>
+                  </div>
+                )}
+              </>
             )}
           </div>
 
