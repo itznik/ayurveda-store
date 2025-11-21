@@ -6,7 +6,7 @@ import { LayoutDashboard, ShoppingBag, Users, Package, Settings, BarChart3, LogO
 import { motion, AnimatePresence } from "framer-motion";
 
 const MENU_ITEMS = [
-  { name: "Dashboard", icon: <LayoutDashboard />, href: "/admin/dashboard" }, // Updated to point to dashboard page
+  { name: "Dashboard", icon: <LayoutDashboard />, href: "/admin" }, // Updated to point to dashboard page
   { name: "Orders", icon: <ShoppingBag />, href: "/admin/orders" },
   { name: "Products", icon: <Package />, href: "/admin/products" },
   { name: "Customers", icon: <Users />, href: "/admin/customers" },
