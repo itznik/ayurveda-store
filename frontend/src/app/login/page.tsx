@@ -6,6 +6,38 @@ import { ArrowRight, Mail, Lock } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
 
 export default function LoginPage() {
+  const router = useRouter();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+
+    try {
+      // 1. The Connection
+      const { data } = await API.post("/users/login", { email, password });
+
+      // 2. Success - Save to Storage
+      localStorage.setItem("userInfo", JSON.stringify(data));
+      
+      // 3. Redirect (If Admin -> Dashboard, If User -> Home)
+      if (data.role === 'admin') {
+          router.push("/admin/dashboard");
+      } else {
+          router.push("/");
+      }
+      
+    } catch (err: any) {
+      // 4. Handle Error
+      setError(err.response?.data?.message || "Something went wrong");
+    } finally {
+      setLoading(false);
+    }
+  };
   return (
     <>
       <Navbar /> 
@@ -55,7 +87,7 @@ export default function LoginPage() {
             </div>
 
             {/* Login Form */}
-            <form className="space-y-5">
+            <form onSubmit={handleLogin} value={email} onChange={e => setEmail(e.target.value)} {error && <p className="text-red-500">{error}</p>} className="space-y-5">
               
               {/* Email Field */}
               <div className="space-y-2">
