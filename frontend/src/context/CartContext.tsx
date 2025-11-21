@@ -2,8 +2,9 @@
 
 import React, { createContext, useContext, useState, useEffect } from "react";
 
+// Updated to match MongoDB Structure
 export interface CartItem {
-  id: string | number;
+  _id: string; // Changed from 'id' to '_id' to match DB
   name: string;
   price: number;
   image: string;
@@ -17,8 +18,8 @@ interface CartContextType {
   openCart: () => void;
   closeCart: () => void;
   addToCart: (product: any, qty?: number) => void;
-  removeFromCart: (id: string | number) => void;
-  updateQuantity: (id: string | number, delta: number) => void;
+  removeFromCart: (id: string) => void;
+  updateQuantity: (id: string, delta: number) => void;
   cartTotal: number;
   cartCount: number;
 }
@@ -30,12 +31,20 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const [isOpen, setIsOpen] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
 
+  // Load from LocalStorage on mount
   useEffect(() => {
     setIsMounted(true);
     const saved = localStorage.getItem("cart");
-    if (saved) setItems(JSON.parse(saved));
+    if (saved) {
+      try {
+        setItems(JSON.parse(saved));
+      } catch (e) {
+        console.error("Failed to parse cart", e);
+      }
+    }
   }, []);
 
+  // Save to LocalStorage on change
   useEffect(() => {
     if (isMounted) localStorage.setItem("cart", JSON.stringify(items));
   }, [items, isMounted]);
@@ -44,38 +53,57 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const closeCart = () => setIsOpen(false);
 
   const addToCart = (product: any, qty: number = 1) => {
-    if (qty <= 0) return; // Don't add if quantity is 0
+    if (qty <= 0) return;
+
+    // 🛠️ CRITICAL FIX: Handle both MongoDB '_id' and legacy 'id'
+    // If the product comes from DB, it has '_id'. If from static file, it might have 'id'.
+    const productId = product._id || product.id;
+
+    if (!productId) {
+      console.error("Product has no ID:", product);
+      return;
+    }
 
     setItems((prev) => {
-      const existing = prev.find((item) => item.id === product.id);
+      // Check if item already exists using the unified ID
+      const existing = prev.find((item) => item._id === productId);
+
       if (existing) {
         return prev.map((item) =>
-          item.id === product.id ? { ...item, quantity: item.quantity + qty } : item
+          item._id === productId ? { ...item, quantity: item.quantity + qty } : item
         );
       }
-      // Parse price
+
+      // Clean Price (Handle string "$100" or number 100)
       const priceNumber = typeof product.price === 'string' 
         ? parseFloat(product.price.replace('$', '')) 
         : product.price;
 
-      return [...prev, { ...product, price: priceNumber, quantity: qty }];
+      return [
+        ...prev, 
+        { 
+          ...product, 
+          _id: productId, // Normalize to _id
+          price: priceNumber, 
+          quantity: qty 
+        }
+      ];
     });
     setIsOpen(true);
   };
 
-  const removeFromCart = (id: string | number) => {
-    setItems((prev) => prev.filter((item) => item.id !== id));
+  const removeFromCart = (id: string) => {
+    setItems((prev) => prev.filter((item) => item._id !== id));
   };
 
-  // --- THE FIX: REMOVE ITEM IF QUANTITY HITS 0 ---
-  const updateQuantity = (id: string | number, delta: number) => {
+  const updateQuantity = (id: string, delta: number) => {
     setItems((prev) => {
       return prev.map((item) => {
-        if (item.id === id) {
+        if (item._id === id) {
           return { ...item, quantity: item.quantity + delta };
         }
         return item;
-      }).filter((item) => item.quantity > 0); // <--- THIS LINE DELETES THE ITEM
+      }).filter((item) => item.quantity > 0); // Remove if 0
     });
   };
 
