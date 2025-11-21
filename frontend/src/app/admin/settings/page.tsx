@@ -1,9 +1,36 @@
 "use client";
 
-import { Save, Globe, CreditCard, Truck } from "lucide-react";
+import { useState } from "react";
+import { Save, Globe, CreditCard, Truck, Loader2 } from "lucide-react";
 import { LuxuryButton } from "@/components/ui/LuxuryButton";
 
 export default function AdminSettingsPage() {
+  const [loading, setLoading] = useState(false);
+  
+  // State for form fields (Ready for Backend Integration)
+  const [settings, setSettings] = useState({
+    storeName: "AyurLuxe",
+    supportEmail: "namaste@ayurluxe.in",
+    currency: "INR (₹)",
+    timezone: "(GMT+05:30) Kolkata, India",
+    taxRate: "18", // GST
+    currencySymbol: "₹",
+    freeShippingThreshold: "999",
+    shippingCost: "99"
+  });
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSettings({ ...settings, [e.target.name]: e.target.value });
+  };
+
+  const handleSave = async () => {
+    setLoading(true);
+    // Simulator: In the future, this will be await API.put('/settings', settings);
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    setLoading(false);
+    alert("Settings updated successfully!");
+  };
+
   return (
     <div className="max-w-4xl space-y-8 pb-20">
       
@@ -12,9 +39,11 @@ export default function AdminSettingsPage() {
           <h1 className="font-serif text-3xl text-luxury-dark dark:text-white">Store Settings</h1>
           <p className="text-neutral-500 dark:text-neutral-400">Manage your store details and configuration.</p>
         </div>
-        <LuxuryButton className="shadow-lg">
-          <Save className="h-4 w-4 mr-2" /> Save Changes
-        </LuxuryButton>
+        <div onClick={handleSave}>
+          <LuxuryButton className="shadow-lg w-40 flex justify-center">
+            {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <><Save className="h-4 w-4 mr-2" /> Save Changes</>}
+          </LuxuryButton>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 gap-8">
@@ -29,10 +58,30 @@ export default function AdminSettingsPage() {
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <InputGroup label="Store Name" defaultValue="AyurLuxe" />
-            <InputGroup label="Support Email" defaultValue="support@ayurluxe.com" />
-            <InputGroup label="Currency" defaultValue="USD ($)" disabled />
-            <InputGroup label="Timezone" defaultValue="(GMT-05:00) Eastern Time" />
+            <InputGroup 
+              label="Store Name" 
+              name="storeName" 
+              value={settings.storeName} 
+              onChange={handleChange} 
+            />
+            <InputGroup 
+              label="Support Email" 
+              name="supportEmail" 
+              value={settings.supportEmail} 
+              onChange={handleChange} 
+            />
+            <InputGroup 
+              label="Currency" 
+              name="currency" 
+              value={settings.currency} 
+              disabled 
+            />
+            <InputGroup 
+              label="Timezone" 
+              name="timezone" 
+              value={settings.timezone} 
+              onChange={handleChange} 
+            />
           </div>
         </div>
 
@@ -46,8 +95,19 @@ export default function AdminSettingsPage() {
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <InputGroup label="Tax Rate (%)" defaultValue="8.5" type="number" />
-            <InputGroup label="Currency Symbol" defaultValue="$" />
+            <InputGroup 
+              label="GST Rate (%)" 
+              name="taxRate" 
+              value={settings.taxRate} 
+              type="number" 
+              onChange={handleChange} 
+            />
+            <InputGroup 
+              label="Currency Symbol" 
+              name="currencySymbol" 
+              value={settings.currencySymbol} 
+              onChange={handleChange} 
+            />
           </div>
         </div>
 
@@ -61,8 +121,20 @@ export default function AdminSettingsPage() {
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <InputGroup label="Free Shipping Threshold ($)" defaultValue="100" type="number" />
-            <InputGroup label="Standard Shipping Cost ($)" defaultValue="15" type="number" />
+            <InputGroup 
+              label="Free Shipping Threshold (₹)" 
+              name="freeShippingThreshold" 
+              value={settings.freeShippingThreshold} 
+              type="number" 
+              onChange={handleChange} 
+            />
+            <InputGroup 
+              label="Standard Shipping Cost (₹)" 
+              name="shippingCost" 
+              value={settings.shippingCost} 
+              type="number" 
+              onChange={handleChange} 
+            />
           </div>
         </div>
 
@@ -71,13 +143,15 @@ export default function AdminSettingsPage() {
   );
 }
 
-function InputGroup({ label, defaultValue, disabled, type = "text" }: any) {
+function InputGroup({ label, name, value, onChange, disabled, type = "text" }: any) {
   return (
     <div className="space-y-2">
       <label className="text-xs font-bold uppercase tracking-widest text-neutral-500">{label}</label>
       <input 
         type={type}
-        defaultValue={defaultValue}
+        name={name}
+        value={value}
+        onChange={onChange}
         disabled={disabled}
         className="w-full px-4 py-3 bg-neutral-50 dark:bg-black/30 border border-neutral-200 dark:border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-luxury-primary/20 dark:focus:ring-emerald-500/20 dark:text-white text-sm font-medium disabled:opacity-50"
       />
