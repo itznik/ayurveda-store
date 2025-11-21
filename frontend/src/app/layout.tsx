@@ -5,6 +5,7 @@ import { ThemeProvider } from "./providers";
 import { CartProvider } from "@/context/CartContext";
 import { CartDrawer } from "@/components/cart/CartDrawer";
 import {SocketProvider} from "@/context/SocketContext";
+import ConnectionStatus from "@/components/ConnectionStatus";
 
 const playfair = Playfair_Display({ subsets: ["latin"], variable: "--font-serif" });
 const lato = Lato({ weight: ["300", "400", "700"], subsets: ["latin"], variable: "--font-sans" });
@@ -25,6 +26,7 @@ export default function RootLayout({
         className={`${playfair.variable} ${lato.variable} antialiased transition-colors duration-300 bg-white text-neutral-900 dark:bg-luxury-dark dark:text-white`}
       >
         <SocketProvider>
+          <ConnectionStatus />
         <ThemeProvider>
           <CartProvider>
             {children}
