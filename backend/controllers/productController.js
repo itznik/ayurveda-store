@@ -1,4 +1,27 @@
-// ... keep existing functions ...
+// @desc    Fetch all products (with Search & Pagination)
+// @route   GET /api/products?keyword=oil&pageNumber=1
+const getProducts = async (req, res) => {
+    const pageSize = 10; // Items per page
+    const page = Number(req.query.pageNumber) || 1;
+
+    // Search Logic
+    const keyword = req.query.keyword
+        ? {
+              name: {
+                  $regex: req.query.keyword,
+                  $options: 'i', // Case insensitive
+              },
+          }
+        : {};
+
+    const count = await Product.countDocuments({ ...keyword });
+    const products = await Product.find({ ...keyword })
+        .limit(pageSize)
+        .skip(pageSize * (page - 1));
+
+    res.json({ products, page, pages: Math.ceil(count / pageSize) });
+};
+
 
 // @desc    Create new review
 // @route   POST /api/products/:id/reviews
