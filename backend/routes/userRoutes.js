@@ -1,9 +1,14 @@
 const express = require('express');
 const router = express.Router();
-const { registerUser } = require('../controllers/authController');
+const { registerUser, authUser } = require('../controllers/authController');
+const { getUserProfile, updateUserProfile } = require('../controllers/userController'); // Import new
+const { protect } = require('../middleware/authMiddleware');
 
-// Route: POST /api/users/register
-// Description: Register a new user & Emit Real-Time Event to Admin
 router.post('/register', registerUser);
+router.post('/login', authUser);
+// New Profile Routes
+router.route('/profile')
+    .get(protect, getUserProfile)
+    .put(protect, updateUserProfile);
 
 module.exports = router;
