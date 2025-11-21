@@ -21,13 +21,18 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
   const [isConnected, setIsConnected] = useState(false);
 
   useEffect(() => {
-    // 1. Connect to the Backend URL
-    const socketInstance = io("http://localhost:5000", {
+    // 1. Determine the Socket URL dynamically
+    // If NEXT_PUBLIC_API_URL is "http://localhost:5000/api", we need "http://localhost:5000"
+    const apiBase = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+    const socketUrl = apiBase.replace('/api', ''); 
+
+    // 2. Connect
+    const socketInstance = io(socketUrl, {
       transports: ["websocket"], // Force WebSocket for speed
       reconnectionAttempts: 5,   // Try to reconnect if server fails
     });
 
-    // 2. Listen for connection success
+    // 3. Listen for connection success
     socketInstance.on("connect", () => {
       console.log("🟢 Connected to Real-Time Server:", socketInstance.id);
       setIsConnected(true);
