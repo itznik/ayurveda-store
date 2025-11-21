@@ -4,48 +4,54 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 import { CartProvider } from "@/context/CartContext";
 import { SocketProvider } from "@/context/SocketContext";
 
-// 1. Theme Context Logic
+// Theme Context
 type ThemeContextType = {
   isDark: boolean;
   toggleTheme: () => void;
 };
 
-const ThemeContext = createContext<ThemeContextType>({ 
-  isDark: false, 
-  toggleTheme: () => {} 
+const ThemeContext = createContext<ThemeContextType>({
+  isDark: false,
+  toggleTheme: () => {},
 });
 
-// 2. Master Wrapper
 export function Providers({ children }: { children: React.ReactNode }) {
   const [isDark, setIsDark] = useState(false);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
-    const storedTheme = localStorage.getItem("theme");
-    const systemDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-    const shouldBeDark = storedTheme === "dark" || (!storedTheme && systemDark);
 
-    setIsDark(shouldBeDark);
-    if (shouldBeDark) document.documentElement.classList.add("dark");
+    const storedTheme = localStorage.getItem("theme");
+    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    const dark = storedTheme === "dark" || (!storedTheme && prefersDark);
+
+    setIsDark(dark);
+
+    if (dark) {
+      document.documentElement.classList.add("dark");
+    }
   }, []);
 
   const toggleTheme = () => {
     const newMode = !isDark;
     setIsDark(newMode);
+
     document.documentElement.classList.toggle("dark", newMode);
     localStorage.setItem("theme", newMode ? "dark" : "light");
   };
 
-  // Prevent hydration errors
-  if (!mounted) {
+  // Important: MUST wrap providers even before mounted
   return (
     <ThemeContext.Provider value={{ isDark, toggleTheme }}>
       <SocketProvider>
-        <CartProvider>{null}</CartProvider>
+        <CartProvider>
+          {/* Only children wait for mounted */}
+          {mounted ? children : null}
+        </CartProvider>
       </SocketProvider>
     </ThemeContext.Provider>
   );
-  }
+}
 
 export const useTheme = () => useContext(ThemeContext);
