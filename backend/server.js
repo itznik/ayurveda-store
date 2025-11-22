@@ -2,65 +2,50 @@ const express = require('express');
 const dotenv = require('dotenv');
 const http = require('http');
 const { Server } = require('socket.io');
-const mongoose = require('mongoose');
 const cors = require('cors');
-
-// Security Packages
 const helmet = require('helmet');
 const mongoSanitize = require('express-mongo-sanitize');
-// REMOVED: const xss = require('xss-clean'); <-- This was causing the crash
+const connectDB = require('./config/db');
 
-// Configuration
-const connectDB = require('./config/db'); // Ensure this matches your file path
+const userRoutes = require('./routes/userRoutes');
+const productRoutes = require('./routes/productRoutes');
+const orderRoutes = require('./routes/orderRoutes');
+
 dotenv.config();
 connectDB();
 
 const app = express();
 const server = http.createServer(app);
 
-// --- 1. SECURITY LAYER ---
-app.use(helmet()); // Protects HTTP Headers
-// REMOVED: app.use(xss()); <-- This was causing the crash
-app.use(mongoSanitize()); // Prevents SQL/NoSQL Injection
-app.use(express.json({ limit: '10kb' })); // Prevent DoS by limiting body size
+// Security
+app.use(helmet());
+app.use(mongoSanitize());
+app.use(express.json());
 app.use(cors({
     origin: process.env.CLIENT_URL || "http://localhost:3000",
     credentials: true
 }));
 
-// --- 2. REAL-TIME SYNC ENGINE ---
+// Socket.io
 const io = new Server(server, {
     cors: {
         origin: process.env.CLIENT_URL || "http://localhost:3000",
-        methods: ["GET", "POST", "PUT", "DELETE"]
+        methods: ["GET", "POST"]
     }
 });
 
+// Inject socket into request
 app.use((req, res, next) => {
-    req.io = io; 
+    req.io = io;
     next();
 });
 
-io.on('connection', (socket) => {
-    console.log(`⚡ Client Connected: ${socket.id}`);
-    socket.on('disconnect', () => console.log('Client Disconnected'));
-});
-
-// --- 3. ROUTES ---
-// Import Routes
-const userRoutes = require('./routes/userRoutes');
-const productRoutes = require('./routes/productRoutes');
-const orderRoutes = require('./routes/orderRoutes');
-
-// Use Routes
+// Routes
 app.use('/api/users', userRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/orders', orderRoutes);
 
-app.get('/', (req, res) => res.send('Ayurveda Backend Secure & Live'));
+app.get('/', (req, res) => res.send('API Running'));
 
-// --- 4. START SERVER ---
 const PORT = process.env.PORT || 5000;
-server.listen(PORT, () => {
-    console.log(`🚀 Server running on Port ${PORT}`);
-});
+server.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
