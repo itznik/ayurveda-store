@@ -14,9 +14,9 @@ const importData = async () => {
     // 2. Create the Super Admin
     const adminUser = new User({
       name: 'Nikunj Admin',
-      email: 'admin@ayurveda.com',
+      email: 'admin@wellixir.com',
       // Password will be hashed automatically by your User model's pre-save hook
-      password: 'adminpassword123', 
+      password: 'admin', 
       role: 'admin',
       avatar: 'https://cdn-icons-png.flaticon.com/512/2206/2206368.png'
     });
