@@ -1,6 +1,8 @@
 const User = require('../models/User');
+const jwt = require('jsonwebtoken');
+
+// Helper to generate token (reused if password changes)
 const generateToken = (id) => {
-    const jwt = require('jsonwebtoken');
     return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: '30d' });
 };
 
@@ -34,7 +36,7 @@ const updateUserProfile = async (req, res) => {
         user.email = req.body.email || user.email;
         
         if (req.body.password) {
-            user.password = req.body.password; // Will be hashed automatically by model
+            user.password = req.body.password; // Model will hash this automatically
         }
 
         const updatedUser = await user.save();
