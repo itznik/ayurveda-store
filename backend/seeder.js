@@ -1,42 +1,55 @@
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
-const User = require('./models/User');
-const connectDB = require('./config/db'); // Ensure this path matches your actual db file
+const User = require('./models/User'); // Ensure path to User model is correct
+const connectDB = require('./config/db');
 
 dotenv.config();
-
-// Manually connect since we are running this script standalone
-mongoose.connect(process.env.MONGO_URI)
-    .then(() => console.log('MongoDB Connected for Seeding...'))
-    .catch(err => {
-        console.error(err);
-        process.exit(1);
-    });
+connectDB();
 
 const importData = async () => {
-    try {
-        // 1. Wipe existing users (Optional: Remove this line if you want to keep data)
-        await User.deleteMany();
+  try {
+    // 1. Clear existing users (Comment this out if you want to keep old users)
+    await User.deleteMany();
 
-        // 2. Create the Super Admin
-        const adminUser = new User({
-            name: 'Nikunj Admin',
-            email: 'admin@ayurveda.com',
-            password: 'adminpassword123', // Will be encrypted automatically by your Model
-            role: 'admin',
-            avatar: 'https://cdn-icons-png.flaticon.com/512/2206/2206368.png'
-        });
+    // 2. Create the Super Admin
+    const adminUser = new User({
+      name: 'Nikunj Admin',
+      email: 'admin@ayurveda.com',
+      // Password will be hashed automatically by your User model's pre-save hook
+      password: 'adminpassword123', 
+      role: 'admin',
+      avatar: 'https://cdn-icons-png.flaticon.com/512/2206/2206368.png'
+    });
 
-        await adminUser.save();
+    await adminUser.save();
 
-        console.log('✅ Super Admin Created!');
-        console.log('📧 Email: admin@ayurveda.com');
-        console.log('🔑 Pass: adminpassword123');
-        process.exit();
-    } catch (error) {
-        console.error(`❌ Error: ${error.message}`);
-        process.exit(1);
-    }
+    console.log('-----------------------------------');
+    console.log('✅ SUPER ADMIN CREATED SUCCESSFULLY');
+    console.log('📧 Email: admin@wellixir.com');
+    console.log('🔑 Pass:  admin');
+    console.log('-----------------------------------');
+    
+    process.exit();
+  } catch (error) {
+    console.error(`❌ Error: ${error.message}`);
+    process.exit(1);
+  }
 };
 
-importData();
+const destroyData = async () => {
+  try {
+    await User.deleteMany();
+    console.log('🔴 Data Destroyed!');
+    process.exit();
+  } catch (error) {
+    console.error(`❌ Error: ${error.message}`);
+    process.exit(1);
+  }
+};
+
+// Run logic based on command line argument
+if (process.argv[2] === '-d') {
+  destroyData();
+} else {
+  importData();
+}
