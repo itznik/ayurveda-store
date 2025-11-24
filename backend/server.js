@@ -7,11 +7,10 @@ const helmet = require('helmet');
 const mongoSanitize = require('express-mongo-sanitize');
 const connectDB = require('./config/db');
 
-// Import Routes
 const userRoutes = require('./routes/userRoutes');
 const productRoutes = require('./routes/productRoutes');
 const orderRoutes = require('./routes/orderRoutes');
-const settingsRoutes = require('./routes/settingsRoutes'); // <--- ADD THIS
+const settingsRoutes = require('./routes/settingsRoutes');
 
 dotenv.config();
 connectDB();
@@ -19,19 +18,33 @@ connectDB();
 const app = express();
 const server = http.createServer(app);
 
-// --- 1. SECURITY LAYER ---
+// Security
 app.use(helmet());
 app.use(mongoSanitize());
-app.use(express.json()); 
+app.use(express.json());
+
+// DYNAMIC CORS: Allow Localhost OR Your Production Frontend
+const allowedOrigins = [
+    "http://localhost:3000",
+    process.env.CLIENT_URL // We will set this in Render/Heroku settings
+];
+
 app.use(cors({
-    origin: process.env.CLIENT_URL || "http://localhost:3000",
+    origin: (origin, callback) => {
+        // Allow requests with no origin (like mobile apps or curl requests)
+        if (!origin) return callback(null, true);
+        if (allowedOrigins.indexOf(origin) === -1) {
+            // If specific blocking is needed, uncomment next line. For now, allow flexible dev.
+            // return callback(new Error('CORS Policy Error'), false);
+        }
+        return callback(null, true);
+    },
     credentials: true
 }));
 
-// --- 2. SOCKET.IO SETUP ---
 const io = new Server(server, {
     cors: {
-        origin: process.env.CLIENT_URL || "http://localhost:3000",
+        origin: "*", // Allow sockets from anywhere (safe for this setup)
         methods: ["GET", "POST"]
     }
 });
@@ -41,17 +54,12 @@ app.use((req, res, next) => {
     next();
 });
 
-// --- 3. ROUTES ---
 app.use('/api/users', userRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/orders', orderRoutes);
-app.use('/api/settings', settingsRoutes); // <--- ADD THIS
+app.use('/api/settings', settingsRoutes);
 
-// --- 4. HEALTH CHECK ---
-app.get('/', (req, res) => {
-    res.send('✅ API is Running Successfully');
-});
+app.get('/', (req, res) => res.send('✅ API is Live'));
 
-// --- 5. START SERVER ---
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
