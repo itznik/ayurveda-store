@@ -1,17 +1,17 @@
 import axios from 'axios';
 
-// ⚠️ REPLACE THIS WITH YOUR PUBLIC BACKEND URL BEFORE DEPLOYING
-const CODESPACE_BACKEND_URL = "https://YOUR-NEW-URL-HERE-5000.app.github.dev"; 
+// PRODUCTION LOGIC:
+// 1. If NEXT_PUBLIC_BACKEND_URL is set (e.g. in Vercel), use it.
+// 2. Otherwise, default to localhost for local dev.
+const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000';
 
-const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL || CODESPACE_BACKEND_URL || 'http://localhost:5000';
-
-// Only log in development
+// Log only in dev to verify connection
 if (process.env.NODE_ENV === 'development') {
   console.log("🔌 API Connecting to:", BASE_URL);
 }
 
 const API = axios.create({
-  baseURL: `${BASE_URL}/api`,
+  baseURL: `${BASE_URL}/api`, 
   withCredentials: true,
 });
 
@@ -23,8 +23,7 @@ API.interceptors.request.use((req) => {
         const { token } = JSON.parse(userInfo);
         req.headers.Authorization = `Bearer ${token}`;
       } catch (e) {
-        // Silent fail in production
-        if (process.env.NODE_ENV === 'development') console.error("Token Error:", e);
+        console.error("Token Error:", e);
       }
     }
   }
