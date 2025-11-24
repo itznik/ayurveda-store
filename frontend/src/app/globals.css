@@ -1,0 +1,36 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* THEME VARIABLES */
+@layer base {
+  :root {
+    /* Light Mode: Soft Sage Mist */
+    --background: #F6F8F6; 
+    --foreground: #1A2F25; /* Dark Green Text */
+    --card: #FFFFFF;
+    --border: #E2E8E4;
+  }
+
+  .dark {
+    /* Dark Mode: Deep Rainforest */
+    --background: #05130E; 
+    --foreground: #E8ECE9; /* Pale Sage Text */
+    --card: #0B1F18;
+    --border: #1A352A;
+  }
+
+  body {
+    @apply bg-[var(--background)] text-[var(--foreground)] transition-colors duration-500;
+  }
+}
+
+/* REFINED ANIMATIONS */
+.animate-blob {
+  animation: blob 10s infinite;
+}
+.animation-delay-2000 { animation-delay: 2s; }
+.animation-delay-4000 { animation-delay: 4s; }
+
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
