@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { DollarSign, ShoppingBag, Users, TrendingUp, ArrowUpRight, Plus, Loader2 } from "lucide-react";
+import { DollarSign, ShoppingBag, Users, TrendingUp, TrendingDown, Plus, Loader2 } from "lucide-react"; // Changed imports
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import API from "@/lib/api";
 import { useSocket } from "@/context/SocketContext";
@@ -255,7 +255,8 @@ function StatCard({ title, value, icon, trend, trendUp }: any) {
           {icon}
         </div>
         <div className={`flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-bold ${trendUp ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'}`}>
-          {trendUp ? <ArrowUpRight className="h-3 w-3" /> : <ArrowDownRight className="h-3 w-3" />}
+          {/* Swapped ArrowUpRight for TrendingUp, etc to fix build error */}
+          {trendUp ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
           {trend}
         </div>
       </div>
