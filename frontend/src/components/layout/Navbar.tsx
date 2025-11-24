@@ -74,7 +74,7 @@ export default function Navbar() {
             <div className="flex-shrink-0 flex items-center gap-2 cursor-pointer group" onClick={() => router.push('/')}>
               <div className="w-8 h-8 bg-luxury-primary rounded-tr-xl rounded-bl-xl group-hover:rotate-45 transition-transform duration-500"></div>
               <span className="font-serif text-2xl tracking-wider font-bold text-luxury-dark dark:text-white">
-                AYURLUXE
+                WELLIXIR
               </span>
             </div>
 
