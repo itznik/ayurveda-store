@@ -20,6 +20,7 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
   const [isConnected, setIsConnected] = useState(false);
 
   useEffect(() => {
+    // Use the same ENV variable for the socket URL
     const socketUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:5000";
 
     const socketInstance = io(socketUrl, {
@@ -27,19 +28,8 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
       reconnectionAttempts: 5,
     });
 
-    socketInstance.on("connect", () => {
-      if (process.env.NODE_ENV === 'development') {
-        console.log("🟢 Socket Connected");
-      }
-      setIsConnected(true);
-    });
-
-    socketInstance.on("disconnect", () => {
-      if (process.env.NODE_ENV === 'development') {
-        console.log("🔴 Socket Disconnected");
-      }
-      setIsConnected(false);
-    });
+    socketInstance.on("connect", () => setIsConnected(true));
+    socketInstance.on("disconnect", () => setIsConnected(false));
 
     setSocket(socketInstance);
 
