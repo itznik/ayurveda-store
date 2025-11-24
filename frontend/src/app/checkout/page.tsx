@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { Check, Lock, ArrowLeft, CreditCard, Loader2 } from "lucide-react";
@@ -11,11 +11,11 @@ import API from "@/lib/api";
 import { useRouter } from "next/navigation";
 
 export default function CheckoutPage() {
-  const { items, cartTotal, items: cartItems } = useCart(); // Alias items for clearer usage
+  const { items, cartTotal, items: cartItems } = useCart(); 
   const [isClient, setIsClient] = useState(false);
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
-  const router = useRouter();
+  const router = useRouter(); // eslint-disable-line @typescript-eslint/no-unused-vars
 
   // Form State
   const [form, setForm] = useState({
@@ -54,8 +54,6 @@ export default function CheckoutPage() {
 
         // 3. Success
         setStep(2);
-        // Optional: Clear cart here (needs a clearCart function in context)
-        // clearCart(); 
 
     } catch (error) {
         console.error("Order Failed", error);
@@ -110,10 +108,25 @@ export default function CheckoutPage() {
               <div className="bg-white dark:bg-white/5 p-8 rounded-3xl shadow-sm border border-neutral-100 dark:border-white/5">
                 <h3 className="font-serif text-2xl text-luxury-dark dark:text-white mb-6">Shipping Address</h3>
                 <div className="grid grid-cols-2 gap-4">
-                  <Input placeholder="Address" className="col-span-2" onChange={(e) => setForm({...form, address: e.target.value})} />
-                  <Input placeholder="City" onChange={(e) => setForm({...form, city: e.target.value})} />
-                  <Input placeholder="Postal Code" onChange={(e) => setForm({...form, postalCode: e.target.value})} />
-                  <Input placeholder="Country" value="India" readOnly className="col-span-2 bg-gray-100" />
+                  <Input 
+                    placeholder="Address" 
+                    className="col-span-2" 
+                    onChange={(e) => setForm({...form, address: e.target.value})} 
+                  />
+                  <Input 
+                    placeholder="City" 
+                    onChange={(e) => setForm({...form, city: e.target.value})} 
+                  />
+                  <Input 
+                    placeholder="Postal Code" 
+                    onChange={(e) => setForm({...form, postalCode: e.target.value})} 
+                  />
+                  <Input 
+                    placeholder="Country" 
+                    value="India" 
+                    readOnly 
+                    className="col-span-2 bg-gray-100 dark:bg-white/10 cursor-not-allowed" 
+                  />
                 </div>
               </div>
 
@@ -145,8 +158,8 @@ export default function CheckoutPage() {
 
               {/* PAY BUTTON */}
               <div onClick={!loading ? handlePlaceOrder : undefined}>
-                <LuxuryButton className="w-full py-5 rounded-2xl text-lg shadow-xl shadow-luxury-primary/20 flex justify-center">
-                  {loading ? <Loader2 className="animate-spin" /> : `Pay ₹${cartTotal.toFixed(2)}`}
+                <LuxuryButton className="w-full py-5 rounded-2xl text-lg shadow-xl shadow-luxury-primary/20 flex justify-center items-center gap-2">
+                  {loading ? <Loader2 className="animate-spin h-5 w-5" /> : `Pay ₹${cartTotal.toFixed(2)}`}
                 </LuxuryButton>
               </div>
 
@@ -219,17 +232,17 @@ export default function CheckoutPage() {
   );
 }
 
-// Helper Input Component with Prop Types
-function Input({ placeholder, className, type = "text", icon, onChange, value, readOnly }: any) {
+// --- Helper Input Component ---
+interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+  icon?: React.ReactNode;
+}
+
+function Input({ className, icon, ...props }: InputProps) {
   return (
     <div className={`relative group ${className}`}>
       <input 
-        type={type}
-        placeholder={placeholder}
-        onChange={onChange}
-        value={value}
-        readOnly={readOnly}
-        className="w-full px-5 py-4 bg-neutral-50 dark:bg-black/30 border border-neutral-200 dark:border-white/10 rounded-2xl focus:outline-none focus:ring-2 focus:ring-luxury-primary/20 dark:focus:ring-emerald-500/20 focus:border-luxury-primary dark:focus:border-emerald-500 transition-all text-luxury-dark dark:text-white placeholder-neutral-400 text-sm font-medium"
+        {...props}
+        className={`w-full px-5 py-4 bg-neutral-50 dark:bg-black/30 border border-neutral-200 dark:border-white/10 rounded-2xl focus:outline-none focus:ring-2 focus:ring-luxury-primary/20 dark:focus:ring-emerald-500/20 focus:border-luxury-primary dark:focus:border-emerald-500 transition-all text-luxury-dark dark:text-white placeholder-neutral-400 text-sm font-medium ${props.readOnly ? 'cursor-not-allowed opacity-70' : ''}`}
       />
       {icon && (
         <div className="absolute right-4 top-4 text-neutral-400">
