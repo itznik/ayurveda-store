@@ -103,7 +103,7 @@ export default function ContactPage() {
                   <h3 className="font-serif text-xl text-luxury-dark dark:text-white mb-1">Call Us</h3>
                   <p className="text-neutral-500 dark:text-neutral-400 text-sm mb-3">Mon-Fri from 8am to 5pm IST</p>
                   <a href="tel:+919876543210" className="text-lg font-bold text-luxury-dark dark:text-white hover:text-luxury-primary transition-colors">
-                    +91 98765 43210
+                    +91 91730 04600
                   </a>
                 </div>
               </div>
@@ -118,11 +118,11 @@ export default function ContactPage() {
                 <div>
                   <h3 className="font-serif text-xl text-luxury-dark dark:text-white mb-1">Email Us</h3>
                   <p className="text-neutral-500 dark:text-neutral-400 text-sm mb-3">We typically reply within 2 hours</p>
-                  <a href="mailto:namaste@ayurluxe.com" className="text-lg font-bold text-luxury-dark dark:text-white hover:text-luxury-primary transition-colors block">
-                    namaste@ayurluxe.com
+                  <a href="mailto:wellixiraushadham@gmail.com" className="text-lg font-bold text-luxury-dark dark:text-white hover:text-luxury-primary transition-colors block">
+                    wellixiraushadham@gmail.com
                   </a>
-                  <a href="mailto:support@ayurluxe.com" className="text-sm font-medium text-neutral-400 hover:text-luxury-primary transition-colors block mt-1">
-                    support@ayurluxe.com
+                  <a href="mailto:wellixiraushadham@gmail.com" className="text-sm font-medium text-neutral-400 hover:text-luxury-primary transition-colors block mt-1">
+                    wellixiraushadham@gmail.com
                   </a>
                 </div>
               </div>
@@ -138,8 +138,8 @@ export default function ContactPage() {
                   <h3 className="font-serif text-xl text-luxury-dark dark:text-white mb-1">Visit Us</h3>
                   <p className="text-neutral-500 dark:text-neutral-400 text-sm mb-3">Experience our flagship sanctuary</p>
                   <p className="text-base font-bold text-luxury-dark dark:text-white leading-snug">
-                    123 Wellness Avenue, <br />
-                    Himalayan Foothills, India 249201
+                    Aasha Nagar, <br />
+                    Surat, India, 395004
                   </p>
                 </div>
               </div>
