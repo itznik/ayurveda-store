@@ -45,7 +45,7 @@ export function Hero() {
       <motion.div style={{ y }} className="absolute inset-0 z-0">
         <div 
           className="absolute inset-0 bg-cover bg-center"
-          style={{ backgroundImage: "url('https://images.unsplash.com/photo-1615485290382-441e4d049cb5?q=80&w=2080&auto=format&fit=crop')" }}
+          style={{ backgroundImage: "url('https://i.postimg.cc/V6ZLMDVq/wellixir-aushadham-14040904-022701705.webp')" }}
         />
         <div className="absolute inset-0 bg-luxury-dark/40 dark:bg-luxury-dark/60 backdrop-blur-[2px]" />
       </motion.div>
