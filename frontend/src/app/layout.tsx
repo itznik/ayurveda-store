@@ -11,7 +11,7 @@ const playfair = Playfair_Display({ subsets: ["latin"], variable: "--font-serif"
 const lato = Lato({ weight: ["300", "400", "700"], subsets: ["latin"], variable: "--font-sans" });
 
 export const metadata: Metadata = {
-  title: "AyurLuxe | Premium Ayurvedic Essentials",
+  title: "WELLIXIR | Premium Ayurvedic Essentials",
   description: "Experience the essence of nature.",
 };
 
