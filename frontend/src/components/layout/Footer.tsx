@@ -26,10 +26,10 @@ export function Footer() {
             
             {/* Social Icons */}
             <div className="flex gap-3">
-              <SocialLink href="#" icon={<Instagram className="h-5 w-5" />} />
+              <SocialLink href="https://www.instagram.com/wellixir_aushadham" icon={<Instagram className="h-5 w-5" />} />
               <SocialLink href="#" icon={<Facebook className="h-5 w-5" />} />
               <SocialLink href="#" icon={<Twitter className="h-5 w-5" />} />
-              <SocialLink href="mailto:namaste@ayurluxe.com" icon={<Mail className="h-5 w-5" />} />
+              <SocialLink href="mailto:wellixiraushadham@gmail.com" icon={<Mail className="h-5 w-5" />} />
             </div>
           </div>
 
@@ -55,15 +55,15 @@ export function Footer() {
             <ul className="space-y-4 text-sm text-neutral-500 dark:text-neutral-400">
               <li className="flex items-start gap-3">
                 <MapPin className="h-5 w-5 text-luxury-primary shrink-0 mt-0.5" />
-                <span>123 Wellness Avenue,<br />Himalayan Foothills, India</span>
+                <span>123 Aasha Nagar,<br />Surat, India, 395004</span>
               </li>
               <li className="flex items-center gap-3">
                 <Phone className="h-5 w-5 text-luxury-primary shrink-0" />
-                <a href="tel:+919876543210" className="hover:text-luxury-primary transition-colors">+91 98765 43210</a>
+                <a href="tel:+919876543210" className="hover:text-luxury-primary transition-colors">+91 91730 04600</a>
               </li>
               <li className="flex items-center gap-3">
                 <Mail className="h-5 w-5 text-luxury-primary shrink-0" />
-                <a href="mailto:namaste@ayurluxe.com" className="hover:text-luxury-primary transition-colors">namaste@ayurluxe.com</a>
+                <a href="mailto:namaste@ayurluxe.com" className="hover:text-luxury-primary transition-colors">wellixiraushadham@gmail.com</a>
               </li>
             </ul>
           </div>
@@ -99,7 +99,7 @@ export function Footer() {
 
         {/* Bottom Bar */}
         <div className="border-t border-neutral-200 dark:border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-neutral-500 dark:text-neutral-400">
-          <p>&copy; {currentYear} AyurLuxe. All rights reserved.</p>
+          <p>&copy; {currentYear} WELLIXIR. All rights reserved.</p>
           <div className="flex gap-8">
             <Link href="/about" className="hover:text-luxury-primary transition-colors">About Us</Link>
             <Link href="/privacy" className="hover:text-luxury-primary transition-colors">Privacy Policy</Link>
