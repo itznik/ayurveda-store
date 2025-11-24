@@ -34,6 +34,12 @@ export function AddressAutocomplete({ onSelect, className }: AddressAutocomplete
     debounce: 300,
   });
 
+  interface GoogleAddressComponent {
+  long_name: string;
+  short_name: string;
+  types: string[];
+  }
+  
   const handleSelect = async (description: string) => {
     setValue(description, false);
     clearSuggestions();
@@ -44,7 +50,7 @@ export function AddressAutocomplete({ onSelect, className }: AddressAutocomplete
 
       // Extract details from Google's complex response
       const getComponent = (type: string) => 
-        addressComponents.find((c) => c.types.includes(type))?.long_name || "";
+  addressComponents.find((c: GoogleAddressComponent) => c.types.includes(type))?.long_name || "";
 
       onSelect({
         street: `${getComponent("street_number")} ${getComponent("route")}`.trim(),
